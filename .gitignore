@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+session-report-*.html
+session-report-*.json
+.DS_Store

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "claude-scope",
+  "description": "The /session-report skill: turns a Claude Code session's own JSONL transcript into token, timing and conversation-shape analytics, rendered as a self-contained visual timeline page.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Konrad Cinkusz",
+    "url": "https://github.com/konradcinkusz"
+  },
+  "homepage": "https://github.com/konradcinkusz/claude-scope",
+  "repository": "https://github.com/konradcinkusz/claude-scope",
+  "keywords": [
+    "claude-code",
+    "session",
+    "forensics",
+    "observability",
+    "token-usage",
+    "timeline"
+  ]
+}

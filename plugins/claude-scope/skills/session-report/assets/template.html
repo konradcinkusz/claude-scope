@@ -1,0 +1,295 @@
+<title>__TITLE__</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;600&display=swap">
+<style>
+/* Palette validated for CVD separation and contrast in both modes:
+   light #B45309/#4338CA/#0891B2 · dark #C97A0A/#6366F1/#0E9FBC */
+:root{
+  --ground:#F4F6F8; --panel:#FCFDFE; --sunk:#EDF0F4;
+  --ink:#121922; --ink-2:#42505F; --ink-3:#6B7A8B;
+  --rule:#DCE2E9; --rule-2:#E9EDF2;
+  --you:#B45309; --claude:#4338CA; --tool:#0891B2;
+  --you-soft:rgba(180,83,9,.13);
+  --shadow:0 1px 2px rgba(18,25,34,.05),0 8px 24px -12px rgba(18,25,34,.14);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#0E141A; --panel:#141B23; --sunk:#101820;
+  --ink:#E4EAF1; --ink-2:#A6B4C3; --ink-3:#7A8899;
+  --rule:#242F3A; --rule-2:#1C252E;
+  --you:#C97A0A; --claude:#6366F1; --tool:#0E9FBC;
+  --you-soft:rgba(201,122,10,.18);
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.7);
+}}
+:root[data-theme="dark"]{
+  --ground:#0E141A; --panel:#141B23; --sunk:#101820;
+  --ink:#E4EAF1; --ink-2:#A6B4C3; --ink-3:#7A8899;
+  --rule:#242F3A; --rule-2:#1C252E;
+  --you:#C97A0A; --claude:#6366F1; --tool:#0E9FBC;
+  --you-soft:rgba(201,122,10,.18);
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);margin:0;
+  font-family:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:56px 24px 96px;display:flex;flex-direction:column;gap:44px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+h1,h2,h3{margin:0;text-wrap:balance}
+.eyebrow{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3);font-weight:500}
+header{display:flex;flex-direction:column;gap:14px;border-bottom:1px solid var(--rule);padding-bottom:34px}
+h1{font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:600;font-size:clamp(30px,4.6vw,44px);
+  letter-spacing:-.028em;line-height:1.08}
+.lede{color:var(--ink-2);max-width:63ch;font-size:16.5px;margin:0}
+.lede b{color:var(--ink);font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(196px,1fr));gap:1px;
+  background:var(--rule-2);border:1px solid var(--rule-2);border-radius:10px;overflow:hidden}
+.stat{background:var(--panel);padding:18px 20px 16px;display:flex;flex-direction:column;gap:5px}
+.stat .k{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-3);font-weight:500}
+.stat .v{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:27px;font-weight:600;
+  letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1.1}
+.stat .v small{font-size:16px;font-weight:500}
+.stat .n{font-size:13px;color:var(--ink-2);line-height:1.45}
+.chart{background:var(--panel);border:1px solid var(--rule);border-radius:12px;
+  padding:26px 26px 18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:6px}
+.chart-head{display:flex;flex-wrap:wrap;gap:14px;align-items:baseline;justify-content:space-between;padding-bottom:2px}
+.chart-head h2{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:15px;font-weight:600;letter-spacing:-.01em}
+.legend{display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.lg{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink-2)}
+.sw{flex:none;border-radius:2px}
+.sw.you{width:5px;height:16px;background:var(--you);border-radius:1px}
+.sw.flag{width:10px;height:10px;border-radius:50%;background:var(--claude)}
+.sw.reply{width:16px;height:10px;background:var(--claude);border-radius:3px}
+.sw.tool{width:4px;height:16px;background:var(--tool);opacity:.75;border-radius:2px 2px 0 0}
+.howto{font-size:13px;color:var(--ink-3);margin:0 0 10px;max-width:78ch}
+.howto b{color:var(--ink-2);font-weight:600}
+.scroller{overflow-x:auto}
+.lanes{min-width:840px;display:flex;flex-direction:column;gap:12px}
+.lane{background:var(--sunk);border-radius:10px;padding:12px 16px 14px;border:1px solid var(--rule-2)}
+.lane-head{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:10px}
+.tno{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;font-weight:600;letter-spacing:.08em;
+  color:var(--you);background:var(--you-soft);padding:2px 7px;border-radius:4px;flex:none}
+.chip{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:10.5px;font-weight:600;letter-spacing:.07em;
+  padding:2px 7px;border-radius:4px;flex:none;color:var(--tool);background:var(--sunk);
+  box-shadow:inset 0 0 0 1px var(--rule)}
+.prompt{font-size:13.5px;color:var(--ink);flex:1 1 240px;min-width:0;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.prompt::before{content:'\201C'}.prompt::after{content:'\201D'}
+.meta{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11.5px;color:var(--ink-3);
+  font-variant-numeric:tabular-nums;flex:none}
+.track{position:relative;height:66px}
+.grid{position:absolute;inset:0;pointer-events:none}
+.grid i{position:absolute;top:0;bottom:0;width:1px;background:var(--rule)}
+.base{position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--rule)}
+.band{position:absolute;top:0;height:22px;background:var(--panel);border-radius:5px;
+  box-shadow:inset 0 0 0 1px var(--rule-2);overflow:hidden;display:flex;align-items:center}
+.band span{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:10.5px;color:var(--ink-2);
+  padding:0 7px 0 12px;white-space:nowrap}
+.flagm{position:absolute;top:0;width:10px;height:10px;border-radius:50%;background:var(--claude);
+  box-shadow:0 0 0 2px var(--panel);transform:translate(-5px,6px);z-index:3;cursor:default}
+.mark{position:absolute;bottom:0;cursor:default}
+.mark.tool{width:4px;background:var(--tool);border-radius:2px 2px 0 0;opacity:.68;transition:opacity .12s}
+.mark.tool:hover{opacity:1}
+.mark.reply{top:0;height:22px;bottom:auto;background:var(--claude);border-radius:5px;
+  box-shadow:0 0 0 2px var(--panel);display:flex;align-items:center;overflow:hidden;z-index:2}
+.mark.reply span{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:10.5px;font-weight:600;
+  color:#fff;padding:0 8px;white-space:nowrap}
+.mark.you{top:0;bottom:0;width:5px;background:var(--you);border-radius:2px;z-index:2}
+.callout{position:absolute;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:10.5px;
+  color:var(--ink-2);white-space:nowrap;pointer-events:none;background:var(--panel);
+  padding:1px 6px;border-radius:4px;box-shadow:0 0 0 1px var(--rule-2);z-index:4}
+.axis{position:relative;height:20px;margin-top:8px}
+.axis span{position:absolute;top:0;transform:translateX(-50%);font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.axis span:first-child{transform:none}
+.tip{position:fixed;z-index:9;pointer-events:none;opacity:0;transition:opacity .1s;
+  background:var(--ink);color:var(--ground);padding:7px 10px;border-radius:6px;font-size:12px;
+  max-width:300px;line-height:1.4;box-shadow:0 6px 20px -6px rgba(0,0,0,.45)}
+.tip b{font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:600;display:block;font-size:11px;
+  letter-spacing:.06em;text-transform:uppercase;opacity:.72;margin-bottom:2px}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:22px}
+.note{display:flex;flex-direction:column;gap:7px}
+.note h3{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:13px;font-weight:600}
+.note p{margin:0;font-size:14px;color:var(--ink-2)}
+.note .big{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:22px;font-weight:600;
+  letter-spacing:-.02em;color:var(--ink);font-variant-numeric:tabular-nums}
+details{border-top:1px solid var(--rule);padding-top:18px}
+summary{cursor:pointer;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12.5px;
+  color:var(--ink-2);font-weight:500}
+summary:focus-visible{outline:2px solid var(--claude);outline-offset:3px;border-radius:3px}
+table{border-collapse:collapse;width:100%;margin-top:14px;font-size:12.5px}
+th,td{text-align:left;padding:6px 10px 6px 0;border-bottom:1px solid var(--rule-2);vertical-align:top}
+th{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:10.5px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--ink-3);font-weight:500}
+td.n{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;
+  white-space:nowrap;color:var(--ink-2)}
+td .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;vertical-align:middle}
+footer{color:var(--ink-3);font-size:13px;border-top:1px solid var(--rule);padding-top:20px;max-width:78ch}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">__EYEBROW__</div>
+  <h1>__TITLE__</h1>
+  <p class="lede">__LEDE__</p>
+</header>
+
+<section class="stats">__STATS__</section>
+
+<section class="chart">
+  <div class="chart-head">
+    <h2>Turn by turn, on a shared clock</h2>
+    <div class="legend">
+      <span class="lg"><i class="sw you"></i>You</span>
+      <span class="lg"><i class="sw flag"></i>Claude narrates</span>
+      <span class="lg"><i class="sw reply"></i>Reply</span>
+      <span class="lg"><i class="sw tool"></i>Tool call</span>
+    </div>
+  </div>
+  <p class="howto">Each card is one of your prompts, on a shared 0&ndash;__MAXMIN__&nbsp;minute clock. The <b>pale bands</b> are phases of work, opening at the moment Claude said something out loud (the dot &mdash; hover it for the exact words). <b>Ticks</b> below are tool calls; taller&nbsp;=&nbsp;more text read back. The turn ends at the solid <b>reply</b> block.</p>
+  <div class="scroller">
+    <div class="lanes" id="lanes"></div>
+    <div class="axis" id="axis"></div>
+  </div>
+</section>
+
+<section class="notes">__CARDS__</section>
+
+<details>
+  <summary>Every event as a table &mdash; __ROWS__ rows</summary>
+  <div class="scroller"><table id="tbl">
+    <thead><tr><th>Turn</th><th>At</th><th>Kind</th><th>What</th><th>Read back</th></tr></thead>
+    <tbody></tbody>
+  </table></div>
+</details>
+
+<footer>__FOOTER__</footer>
+</div>
+<div class="tip" id="tip" role="status"></div>
+<script>
+const DATA = __DATA__;
+const MAXT = __MAXT__, GRID = 60, TEXTCAP = __TEXTCAP__;
+const BIGREAD = __BIGREAD__; /* {turn, off, size} of the largest text read, or null */
+const fmt = n => n.toLocaleString('en-US');
+const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const X = s => 100*Math.min(s, MAXT)/MAXT + '%';
+const lanes = document.getElementById('lanes');
+const tip = document.getElementById('tip');
+function show(e, title, body){
+  tip.innerHTML = '<b>'+title+'</b>'+body;
+  tip.style.opacity = 1;
+  const r = tip.getBoundingClientRect();
+  let x = e.clientX + 14, y = e.clientY - r.height - 12;
+  if (x + r.width > innerWidth - 8) x = e.clientX - r.width - 14;
+  if (y < 8) y = e.clientY + 18;
+  tip.style.left = x+'px'; tip.style.top = y+'px';
+}
+const hide = () => tip.style.opacity = 0;
+function hover(el, title, body){
+  el.addEventListener('mousemove', e => show(e, title, body));
+  el.addEventListener('mouseleave', hide);
+}
+
+DATA.forEach(t => {
+  const lane = document.createElement('div');
+  lane.className = 'lane';
+  const tools = t.events.filter(e => e.kind === 'tool');
+  const mins = t.dur >= 60 ? (t.dur/60).toFixed(1)+' min' : Math.round(t.dur)+' s';
+  const ncall = tools.length + (tools.length === 1 ? ' call' : ' calls');
+  const extra = t.note ? ' &middot; '+esc(t.note) : '';
+  lane.innerHTML =
+    '<div class="lane-head"><span class="tno">TURN '+t.n+'</span>'+
+    (t.inflight ? '<span class="chip">IN FLIGHT</span>' : '')+
+    '<span class="prompt" title="'+esc(t.prompt).replace(/"/g,'&quot;')+'">'+esc(t.prompt).slice(0,120)+'</span>'+
+    '<span class="meta">'+esc(t.startLabel)+' &middot; '+mins+' &middot; '+ncall+extra+'</span></div>';
+  const track = document.createElement('div');
+  track.className = 'track';
+  let g = '<div class="grid">';
+  for (let s = GRID; s <= MAXT; s += GRID) g += '<i style="left:'+X(s)+'"></i>';
+  track.innerHTML = g + '</div><div class="base"></div>';
+
+  (t.segs || []).forEach(sg => {
+    const band = document.createElement('div');
+    band.className = 'band';
+    band.style.left = 'calc('+X(sg.a)+' + 1px)';
+    band.style.width = 'calc('+(100*(Math.min(sg.b,MAXT)-Math.min(sg.a,MAXT))/MAXT)+'% - 3px)';
+    band.innerHTML = '<span>'+esc(sg.label||'')+'</span>';
+    hover(band, Math.round(sg.a)+'s → '+Math.round(sg.b)+'s · '+sg.tools+(sg.tools===1?' call':' calls'),
+      esc(sg.label||'') + (sg.opener ? '<br><i>“'+esc(sg.opener)+'”</i>' : ''));
+    track.appendChild(band);
+    if (sg.opener){
+      const f = document.createElement('div');
+      f.className = 'flagm'; f.style.left = X(sg.a);
+      hover(f, '+'+Math.round(sg.a)+'s · Claude, out loud', '“'+esc(sg.opener)+'”');
+      track.appendChild(f);
+    }
+  });
+
+  const you = document.createElement('div');
+  you.className = 'mark you'; you.style.left = '0%';
+  hover(you, 'You · turn '+t.n, esc(t.prompt).slice(0,160)+' <i>('+t.promptChars+' chars)</i>');
+  track.appendChild(you);
+
+  tools.forEach(ev => {
+    const m = document.createElement('div');
+    m.className = 'mark tool';
+    m.style.height = (6 + 30*Math.sqrt(Math.min(ev.size,TEXTCAP)/TEXTCAP)).toFixed(1)+'px';
+    m.style.left = X(ev.off);
+    hover(m, '+'+Math.round(ev.off)+'s · '+esc(ev.tool||'tool'),
+      esc(ev.label)+'<br><i>'+(ev.is_image ? '≈'+Math.round(ev.size/1024)+' KB read back (image)' : fmt(ev.size)+' characters read back')+'</i>');
+    track.appendChild(m);
+  });
+
+  if (t.replyOff != null){
+    const w = Math.min(Math.max(46, t.replySize/70), 120);
+    const m = document.createElement('div');
+    m.className = 'mark reply';
+    m.style.left = 'calc('+X(t.replyOff)+' + 1px)';
+    m.style.width = w+'px';
+    m.innerHTML = '<span>reply</span>';
+    hover(m, '+'+Math.round(t.replyOff)+'s · reply · '+fmt(t.replySize)+' chars', esc(t.replyLabel||'')+'…');
+    track.appendChild(m);
+  }
+  if (BIGREAD && t.n === BIGREAD.turn){
+    const c = document.createElement('div');
+    c.className = 'callout';
+    c.style.left = 'calc('+X(Math.min(BIGREAD.off + 8, MAXT*0.7))+' + 12px)'; c.style.bottom = '22px';
+    c.textContent = 'tallest tick: '+fmt(BIGREAD.size)+' chars in one read';
+    track.appendChild(c);
+  }
+  lane.appendChild(track);
+  lanes.appendChild(lane);
+});
+
+const ax = document.getElementById('axis');
+let a = '';
+for (let s = 0; s <= MAXT; s += GRID) a += '<span style="left:'+X(s)+'">'+(s===0?'0s':(s%180===0? (s/60)+'m' : s+'s'))+'</span>';
+ax.innerHTML = a;
+
+function fitLabels(){
+  document.querySelectorAll('.band').forEach(b => {
+    const sp = b.querySelector('span');
+    if (sp) sp.style.visibility = (b.clientWidth < sp.scrollWidth + 8) ? 'hidden' : 'visible';
+  });
+}
+requestAnimationFrame(fitLabels);
+addEventListener('resize', fitLabels);
+
+const tb = document.querySelector('#tbl tbody');
+const col = {you:'var(--you)', aside:'var(--claude)', reply:'var(--claude)', tool:'var(--tool)'};
+const name = {aside:'aside', reply:'reply', tool:'tool call'};
+DATA.forEach(t => {
+  const rows = [{off:0, kind:'you', label:t.prompt, size:t.promptChars, tool:''}].concat(t.events);
+  rows.forEach(ev => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td class="n">'+t.n+'</td><td class="n">+'+Math.round(ev.off)+'s</td>'+
+      '<td class="n"><span class="dot" style="background:'+col[ev.kind]+'"></span>'+(ev.kind==='you'?'you':name[ev.kind])+'</td>'+
+      '<td>'+(ev.tool ? '<span class="mono" style="color:var(--ink-3)">'+esc(ev.tool)+'</span> &middot; ' : '')+esc(ev.label).slice(0,110)+'</td>'+
+      '<td class="n">'+fmt(ev.size)+' ch</td>';
+    tb.appendChild(tr);
+  });
+});
+</script>

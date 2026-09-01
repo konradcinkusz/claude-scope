@@ -28,6 +28,8 @@ the numbers that explain where the time and tokens went.
 
 ## Install
 
+**Claude Code**
+
 ```sh
 claude plugin marketplace add konradcinkusz/claude-scope
 claude plugin install claude-scope@claude-scope
@@ -35,6 +37,30 @@ claude plugin install claude-scope@claude-scope
 
 Then, in any session: `/session-report` — or just ask naturally ("what did
 this session cost?", "show me a timeline of this conversation").
+
+**GitHub Copilot CLI** — the plugin follows the vendor-neutral
+[Agent Plugins](https://agent-plugins.org/) format, so the same tree installs
+there too:
+
+```sh
+copilot plugin marketplace add konradcinkusz/claude-scope
+copilot plugin install claude-scope@claude-scope
+```
+
+**VS Code** — add the repository to `chat.plugins.marketplaces`:
+
+```json
+{ "chat.plugins.marketplaces": ["konradcinkusz/claude-scope"] }
+```
+
+One honest caveat for non-Claude clients: the skill installs and runs
+anywhere, but its **data source is Claude Code's transcript format**
+(`~/.claude/projects/*.jsonl`). Installed in Copilot it will happily analyze
+the Claude Code sessions on that machine — it cannot yet report on Copilot's
+own sessions, because Copilot stores its history differently. An adapter for
+other assistants' session logs is the natural extension point: the analyzer's
+internal model (turns, events, phase segments) is assistant-agnostic; only
+the parser at the edge is Claude-shaped.
 
 ## How it works
 

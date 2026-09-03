@@ -1,0 +1,49 @@
+{
+ "source": "example-agent",
+ "capability_tier": "partial",
+ "session_id": "partfix",
+ "events": [
+  {
+   "t": "2026-01-02T12:00:00Z",
+   "kind": "user",
+   "size": 42,
+   "label": "ship the release notes"
+  },
+  {
+   "t": "2026-01-02T12:03:20Z",
+   "kind": "reply",
+   "size": 900,
+   "label": "Release notes are ready.",
+   "model": "some-agent-model",
+   "usage": {
+    "input": 300,
+    "output": 1200,
+    "cache_read": 5000,
+    "cache_write": 100
+   }
+  },
+  {
+   "t": "2026-01-02T12:05:00Z",
+   "kind": "user",
+   "size": 11,
+   "label": "thanks"
+  },
+  {
+   "t": "2026-01-02T12:05:30Z",
+   "kind": "reply",
+   "size": 60,
+   "label": "Any time.",
+   "usage": {
+    "input": 10,
+    "output": 40,
+    "cache_read": 900,
+    "cache_write": 0
+   }
+  },
+  {
+   "kind": "nonsense-kind",
+   "size": 5
+  },
+  "not even an object"
+ ]
+}

@@ -1,8 +1,10 @@
 # claude-scope
 
-Session forensics for Claude Code: a `/session-report` skill that turns a
-session's own transcript into token, timing and conversation-shape analytics —
-with a visual timeline. Installable as a plugin.
+Session forensics for coding agents: a `/session-report` skill that turns a
+session's own history into token, timing and conversation-shape analytics —
+with a visual timeline. Built for Claude Code's transcript, with an adapter
+boundary so it can report on whatever session data the agent running it can
+actually reach. Installable as a plugin.
 
 Ask *"how many tokens did this session use?"* or *"sum up what you did"* and
 you get back a page like this: every prompt, tool call and reply placed at the
@@ -53,14 +55,28 @@ copilot plugin install claude-scope@claude-scope
 { "chat.plugins.marketplaces": ["konradcinkusz/claude-scope"] }
 ```
 
-One honest caveat for non-Claude clients: the skill installs and runs
-anywhere, but its **data source is Claude Code's transcript format**
-(`~/.claude/projects/*.jsonl`). Installed in Copilot it will happily analyze
-the Claude Code sessions on that machine — it cannot yet report on Copilot's
-own sessions, because Copilot stores its history differently. An adapter for
-other assistants' session logs is the natural extension point: the analyzer's
-internal model (turns, events, phase segments) is assistant-agnostic; only
-the parser at the edge is Claude-shaped.
+The skill installs and runs anywhere, and it is no longer tied to one
+transcript format. The analyzer counts from a **normalized event list**; where
+that list comes from is an adapter's problem. Three exist today:
+
+| flag | source | tier |
+| --- | --- | --- |
+| *(default)* / `--transcript` | Claude Code's `~/.claude/projects/*.jsonl` | `full` |
+| `--stream` | a stream-json capture (Claude Agent SDK, `claude -p`) | `stream` |
+| `--events` | a normalized event list the agent fetched from its own store | whatever it honestly claims |
+
+That last one is the general escape hatch. The script is stdlib-only and cannot
+open a database or make a tool call — so under an agent whose history lives in
+a local database or a cloud store, **the agent queries its own store and writes
+plain JSON, and the script still does all the counting.** The rule that the
+model never does arithmetic extends to fetching: it supplies raw facts, the
+script computes.
+
+Every source declares a **capability tier**, and the tier reaches the page. A
+source that only exposes turn-level totals renders one flat block per turn and
+says so — in the lede, the legend, the stat tiles and a card — instead of
+drawing an empty-looking timeline. Under-claiming costs a little detail;
+over-claiming invents a session that was never observed.
 
 ## How it works
 
@@ -72,12 +88,25 @@ which turns out to segment sessions naturally) and writes the summary. That
 split keeps the numbers exact and the analysis cheap: analyzing a session
 costs a small fraction of the session itself.
 
-The transcript format is undocumented, and it bites: duplicate records per
-API response, subagent sidechains, pseudo-turns fabricated by local slash
-commands, image payloads masquerading as huge text reads. The parser handles
-each of these; they're documented in
-[`plugins/claude-scope/skills/session-report/references/transcript-format.md`](plugins/claude-scope/skills/session-report/references/transcript-format.md),
-which is the closest thing to a spec we're aware of.
+Under another agent, the model's extra job is *fetching* — query the session
+store, write the normalized JSON, hand it to the script. It still does no
+arithmetic.
+
+These formats are undocumented, and they bite: duplicate records per API
+response, subagent sidechains, pseudo-turns fabricated by local slash commands,
+image payloads masquerading as huge text reads, extended-reasoning blocks whose
+text arrives redacted to `""`, and — in stream-json — per-record token counts
+that are mid-stream partials and undercount output by more than an order of
+magnitude if you sum them. Every one of these was hit on a real session. The
+parser handles them; they're documented in
+[`transcript-format.md`](plugins/claude-scope/skills/session-report/references/transcript-format.md)
+(the JSONL format) and
+[`session-sources.md`](plugins/claude-scope/skills/session-report/references/session-sources.md)
+(every other source, plus the ones we checked and found insufficient), which
+are the closest thing to a spec we're aware of.
+
+Run `python3 tests/test_analyze.py` after touching the analyzer — the suite
+pins each trap and the rendered shape of the JSONL path.
 
 ## What it is not
 
@@ -88,18 +117,22 @@ which is the closest thing to a spec we're aware of.
 
 ## Privacy
 
-Transcripts contain your full conversation **and every tool output** —
-possibly secrets. The report is built from aggregates, phase labels and
-short quoted narration; tool outputs are never copied into it. Treat the
+Session data contains your full conversation **and every tool output** —
+possibly secrets. The report is built from aggregates, phase labels and short
+quoted narration; tool outputs are never copied into it, and extended-reasoning
+text is counted but never quoted. The same rule binds any new source. Treat the
 generated HTML as shareable only to the extent your session was.
 
 ## Caveats
 
-- The transcript format is unstable between CLI releases; parsing is
-  defensive (skip, never crash), but a format change can hide data until the
-  parser catches up. Issues welcome with a redacted sample line.
+- These formats are unstable between releases; parsing is defensive (skip,
+  never crash), but a format change can hide data until the parser catches up.
+  Issues welcome with a redacted sample line.
 - Transcript locations are as observed on Linux/macOS local and remote
   environments; pass `--transcript` explicitly where auto-location misses.
+- Adapters are only written for sources verified against a live session. Where
+  a store looked promising but couldn't be confirmed, it's recorded as such in
+  `session-sources.md` rather than guessed at.
 - Character→token conversions shown anywhere are estimates; usage-field
   numbers are exact.
 

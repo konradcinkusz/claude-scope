@@ -58,6 +58,20 @@ One JSON object per line. `type` is one of:
    turns isn't attributed to either.
 8. **`message.model` varies per response** — model switches (`/model`) and
    serving fallbacks are visible here and only here.
+9. **`thinking` blocks are usually redacted to `""`.** Extended reasoning
+   arrives as `{"type":"thinking","thinking":…,"signature":…}` among the
+   assistant content blocks. Observed on a live remote session: all 14
+   thinking blocks had `thinking == ""` and only `signature` (404–1508 chars
+   of opaque blob) populated. A character count is therefore not a usable
+   proxy for how much reasoning happened. The figure that *is* populated is
+   `usage.output_tokens_details.thinking_tokens` — 14,251 tokens across 22
+   deduped responses in that same session. Count the blocks, report the
+   tokens, and never quote the text: it is reasoning, and the report is
+   shareable.
+10. **Not every content block produces a visible event.** Empty text blocks and
+   block types the parser doesn't handle still mark the model as busy on the
+   wall-clock; drop them from the lanes but keep their timestamp, or
+   reasoning-vs-execution time skews.
 
 ## Semantic conventions the analyzer derives
 
@@ -68,3 +82,7 @@ One JSON object per line. `type` is one of:
 - A **segment** = the span between consecutive asides (or start/reply):
   the phases of work the timeline's bands show. The aside that opens a
   segment is quoted as its `opener`.
+- Everything above is turned into the shared **normalized event list** that
+  `analyze()` consumes; this format is one adapter feeding it, at the `full`
+  capability tier. Other sources, their tiers and their own traps are in
+  [`session-sources.md`](session-sources.md).

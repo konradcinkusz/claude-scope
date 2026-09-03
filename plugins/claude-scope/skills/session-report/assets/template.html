@@ -97,6 +97,8 @@ h1{font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:600;font-size:
 .mark.reply span{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:10.5px;font-weight:600;
   color:#fff;padding:0 8px;white-space:nowrap}
 .mark.you{top:0;bottom:0;width:5px;background:var(--you);border-radius:2px;z-index:2}
+.mark.reply.flat{background:var(--sunk);box-shadow:inset 0 0 0 1px var(--rule);min-width:46px}
+.mark.reply.flat span{color:var(--ink-2);font-weight:500}
 .callout{position:absolute;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:10.5px;
   color:var(--ink-2);white-space:nowrap;pointer-events:none;background:var(--panel);
   padding:1px 6px;border-radius:4px;box-shadow:0 0 0 1px var(--rule-2);z-index:4}
@@ -143,13 +145,10 @@ footer{color:var(--ink-3);font-size:13px;border-top:1px solid var(--rule);paddin
   <div class="chart-head">
     <h2>Turn by turn, on a shared clock</h2>
     <div class="legend">
-      <span class="lg"><i class="sw you"></i>You</span>
-      <span class="lg"><i class="sw flag"></i>Claude narrates</span>
-      <span class="lg"><i class="sw reply"></i>Reply</span>
-      <span class="lg"><i class="sw tool"></i>Tool call</span>
+      __LEGEND__
     </div>
   </div>
-  <p class="howto">Each card is one of your prompts, on a shared 0&ndash;__MAXMIN__&nbsp;minute clock. The <b>pale bands</b> are phases of work, opening at the moment Claude said something out loud (the dot &mdash; hover it for the exact words). <b>Ticks</b> below are tool calls; taller&nbsp;=&nbsp;more text read back. The turn ends at the solid <b>reply</b> block.</p>
+  <p class="howto">__HOWTO__</p>
   <div class="scroller">
     <div class="lanes" id="lanes"></div>
     <div class="axis" id="axis"></div>
@@ -198,7 +197,7 @@ DATA.forEach(t => {
   lane.className = 'lane';
   const tools = t.events.filter(e => e.kind === 'tool');
   const mins = t.dur >= 60 ? (t.dur/60).toFixed(1)+' min' : Math.round(t.dur)+' s';
-  const ncall = tools.length + (tools.length === 1 ? ' call' : ' calls');
+  const ncall = t.flat ? 'turn-level only' : tools.length + (tools.length === 1 ? ' call' : ' calls');
   const extra = t.note ? ' &middot; '+esc(t.note) : '';
   lane.innerHTML =
     '<div class="lane-head"><span class="tno">TURN '+t.n+'</span>'+
@@ -211,7 +210,7 @@ DATA.forEach(t => {
   for (let s = GRID; s <= MAXT; s += GRID) g += '<i style="left:'+X(s)+'"></i>';
   track.innerHTML = g + '</div><div class="base"></div>';
 
-  (t.segs || []).forEach(sg => {
+  (t.flat ? [] : t.segs || []).forEach(sg => {
     const band = document.createElement('div');
     band.className = 'band';
     band.style.left = 'calc('+X(sg.a)+' + 1px)';
@@ -233,7 +232,7 @@ DATA.forEach(t => {
   hover(you, 'You · turn '+t.n, esc(t.prompt).slice(0,160)+' <i>('+t.promptChars+' chars)</i>');
   track.appendChild(you);
 
-  tools.forEach(ev => {
+  (t.flat ? [] : tools).forEach(ev => {
     const m = document.createElement('div');
     m.className = 'mark tool';
     m.style.height = (6 + 30*Math.sqrt(Math.min(ev.size,TEXTCAP)/TEXTCAP)).toFixed(1)+'px';
@@ -243,7 +242,15 @@ DATA.forEach(t => {
     track.appendChild(m);
   });
 
-  if (t.replyOff != null){
+  if (t.flat){
+    const m = document.createElement('div');
+    m.className = 'mark reply flat';
+    m.style.left = '1px'; m.style.width = 'calc('+X(t.dur||MAXT)+' - 3px)';
+    m.innerHTML = '<span>'+esc(t.tierNote || 'detail unavailable')+'</span>';
+    hover(m, 'turn '+t.n+' · '+Math.round(t.dur)+'s',
+      'Finer detail was not available for this session: '+esc(t.tierGap || 'the source reports turn-level totals only')+'.');
+    track.appendChild(m);
+  } else if (t.replyOff != null){
     const w = Math.min(Math.max(46, t.replySize/70), 120);
     const m = document.createElement('div');
     m.className = 'mark reply';
@@ -271,6 +278,10 @@ ax.innerHTML = a;
 
 function fitLabels(){
   document.querySelectorAll('.band').forEach(b => {
+    const sp = b.querySelector('span');
+    if (sp) sp.style.visibility = (b.clientWidth < sp.scrollWidth + 8) ? 'hidden' : 'visible';
+  });
+  document.querySelectorAll('.mark.reply.flat').forEach(b => {
     const sp = b.querySelector('span');
     if (sp) sp.style.visibility = (b.clientWidth < sp.scrollWidth + 8) ? 'hidden' : 'visible';
   });

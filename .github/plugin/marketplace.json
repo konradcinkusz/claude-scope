@@ -11,7 +11,7 @@
   "plugins": [
     {
       "name": "claude-scope",
-      "description": "The /session-report skill: turns a Claude Code session's own JSONL transcript into token, timing and conversation-shape analytics, rendered as a self-contained visual timeline page.",
+      "description": "The /session-report skill: turns a coding-agent session's own history — Claude Code's JSONL transcript, a stream-json capture, or session data the agent fetched itself — into token, timing and conversation-shape analytics, rendered as a self-contained visual timeline page.",
       "version": "0.1.0",
       "author": {
         "name": "Konrad Cinkusz",
